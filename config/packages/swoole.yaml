@@ -1,0 +1,12 @@
+swoole:
+  http_server:
+    port: 9501
+    host: 0.0.0.0
+    running_mode: process
+    socket_type: tcp
+    ssl_enabled: false
+    trusted_hosts: localhost,127.0.0.1
+    trusted_proxies:
+      - '*'
+      - 127.0.0.1/8
+      - 192.168.2./16

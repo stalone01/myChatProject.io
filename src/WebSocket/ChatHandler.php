@@ -1,26 +1,31 @@
 <?php
+namespace App\Handler;
 
-namespace App\WebSocket;
-
-use Swoole\WebSocket\Server as WebSocketServer;
 use Swoole\Http\Request;
+use Swoole\Http\Response;
 use Swoole\WebSocket\Frame;
+// use Swoole\WebSocket\Server;
+use SwooleBundle\SwooleBundle\Server;
 
 class ChatHandler
 {
-    public function onOpen(WebSocketServer $server, Request $request)
+    public function onOpen(Server $server, Request $request)
     {
-        echo "Nouvelle connexion : {$request->fd}\n";
+        echo "New connection established: #{$request->fd}\n";
     }
 
-    public function onMessage(WebSocketServer $server, Frame $frame)
+    public function onMessage(Server $server, Frame $frame)
     {
-        echo "Nouveau message : {$frame->data}\n";
-        $server->push($frame->fd, "Message reçu : {$frame->data}");
+        echo "Received message from #{$frame->fd}: {$frame->data}\n";
+        foreach ($server->connections as $fd) {
+            if ($server->isEstablished($fd)) {
+                $server->push($fd, $frame->data);
+            }
+        }
     }
 
-    public function onClose(WebSocketServer $server, int $fd)
+    public function onClose(Server $server, int $fd)
     {
-        echo "Connexion fermée : {$fd}\n";
+        echo "Connection closed: #{$fd}\n";
     }
 }
